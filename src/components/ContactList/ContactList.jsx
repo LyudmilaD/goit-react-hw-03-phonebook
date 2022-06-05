@@ -1,15 +1,19 @@
 import PropTypes from 'prop-types';
 import styles from '../Form/Form.module.css';
-function Contacts({ contacts, children, deleteContacts }) {
+import Conctact from '../ContactElementList/ContactElementList';
+function Contacts({ contacts, deleteContacts }) {
   return (
     <div className={styles.wrap}>
-      {children}
       <ul>
         {contacts.map(({ id, name, number }) => {
           return (
             <li className={styles.item} key={id}>
-              {name}: {number}{' '}
-              <button onClick={() => deleteContacts(id)}>Delete</button>{' '}
+              <Conctact
+                name={name}
+                number={number}
+                onClick={deleteContacts}
+                id={id}
+              />
             </li>
           );
         })}
@@ -20,12 +24,11 @@ function Contacts({ contacts, children, deleteContacts }) {
 Contacts.propTypes = {
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      number: PropTypes.string,
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
     })
   ),
-  children: PropTypes.node,
-  deleteContacts: PropTypes.func,
+  deleteContacts: PropTypes.func.isRequired,
 };
 export default Contacts;

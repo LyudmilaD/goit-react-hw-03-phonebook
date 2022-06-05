@@ -6,7 +6,7 @@ function Filter({ value, onChange }) {
       Find contacts by name
       <input
         className={styles.input}
-        type="text"
+        tupe="text"
         value={value}
         onChange={onChange}
       />
@@ -15,7 +15,7 @@ function Filter({ value, onChange }) {
 }
 
 Filter.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
 };
 export default Filter;
