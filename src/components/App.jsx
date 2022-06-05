@@ -5,7 +5,12 @@ import Filter from './Filter/Filter';
 import styles from './Form/Form.module.css';
 export class App extends React.Component {
   state = {
-    contacts: [],
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
     filter: '',
   };
 
@@ -19,8 +24,8 @@ export class App extends React.Component {
         : { contacts: [data, ...prevState.contacts] };
     });
   };
-  changeFilter = e => {
-    this.setState({ filter: e.currentTarget.value });
+  changeFilter = event => {
+    this.setState({ filter: event.currentTarget.value });
   };
   deleteContacts = id => {
     this.setState(prevState => ({
@@ -35,13 +40,15 @@ export class App extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevState) {
+    const { contacts } = this.state;
     if (prevState.contacts !== this.state.contacts) {
       localStorage.setItem(`contacts`, JSON.stringify(this.state.contacts));
     }
   }
 
   render() {
+    const { contacts, filter } = this.state;
     const normalizedFilter = this.state.filter.toLowerCase();
     const visibleContacts = this.state.contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
@@ -49,7 +56,7 @@ export class App extends React.Component {
     return (
       <div className={styles.wrap}>
         <h2>Phonebook</h2>
-        <Form onSubmit={this.submitHandler} />
+        <Form onSubmit={this.submitHandler} contacts={contacts} />
         <h2>Contacts</h2>
         <Filter value={this.state.filter} onChange={this.changeFilter} />
         <ContactList
