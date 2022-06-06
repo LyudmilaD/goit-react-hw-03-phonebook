@@ -1,71 +1,75 @@
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import styles from './Form.module.css';
-import React from 'react';
-export class Form extends React.Component {
-  static defaultProps = {
-    onSubmit: PropTypes.func.isRequired,
-  };
 
+export class Form extends Component {
   state = {
     name: '',
-    id: '',
     number: '',
   };
-
-  handelNameChange = e => {
-    this.setState({ name: e.currentTarget.value, id: nanoid() });
+  static propTypes = {
+    onSubmitData: PropTypes.func.isRequired,
   };
 
-  handelNumberChange = e => {
-    this.setState({ number: e.currentTarget.value });
+  handleChange = element => {
+    const { name, value } = element.currentTarget;
+    this.setState({ [name]: value });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.onSubmit(this.state);
-    this.reset();
+  handleSubmit = element => {
+    element.preventDefault();
+    const { name, number } = this.state;
+    const { onSubmitData } = this.props;
+
+    const data = {
+      id: nanoid(),
+      name,
+      number,
+    };
+    onSubmitData(data);
+    this.inputClean();
   };
-  reset = () => {
-    this.setState({ name: '', id: '', number: '' });
+  inputClean = () => {
+    this.setState({ name: '', number: '' });
   };
   render() {
+    const { name, number } = this.state;
     return (
-      <>
-        <form className={styles.form} onSubmit={this.handleSubmit}>
-          <label className={styles.formLabel}>
-            {' '}
+      <div className={styles.form}>
+        <form onSubmit={this.handleSubmit}>
+          <label className={styles.formlabel}>
             Name
             <input
               className={styles.input}
-              onChange={this.handelNameChange}
-              value={this.state.name}
               type="text"
               name="name"
               pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
               title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
               required
+              value={name}
+              onChange={this.handleChange}
             />
           </label>
           <label className={styles.formLabel}>
-            {' '}
             Number
             <input
               className={styles.input}
-              onChange={this.handelNumberChange}
-              value={this.state.number}
               type="tel"
               name="number"
               pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
               title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
               required
+              value={number}
+              onChange={this.handleChange}
             />
           </label>
-          <button type="submit"> add contact</button>
+          <button type="submit" className={styles.button}>
+            Add contact
+          </button>
         </form>
-      </>
+      </div>
     );
   }
 }
-
 export default Form;

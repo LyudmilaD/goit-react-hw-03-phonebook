@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
 import styles from '../Form/Form.module.css';
-function Filter({ value, onChange }) {
+export const Filter = ({ value, onChange }) => {
   return (
-    <label className={styles.formLabel}>
-      Find contacts by name
+    <div className={styles.formLabel}>
+      <h2>Find contacts by name</h2>
       <input
         className={styles.input}
-        tupe="text"
+        // type="text"
         value={value}
         onChange={onChange}
       />
-    </label>
+    </div>
   );
-}
+};
 
 Filter.propTypes = {
   value: PropTypes.string.isRequired,

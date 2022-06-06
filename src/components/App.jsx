@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Form from './Form/Form';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import styles from './Form/Form.module.css';
-export class App extends React.Component {
+import Notiflix from 'notiflix';
+
+export class App extends Component {
   state = {
     contacts: [
       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
@@ -14,26 +16,36 @@ export class App extends React.Component {
     filter: '',
   };
 
-  submitHandler = data => {
-    const flag = this.state.contacts.find(
-      contact => contact.name === data.name
-    );
+  addContacts = ({ id, name, number }) => {
+    const { contacts } = this.state;
+    if (
+      contacts.find(
+        contact => contact.name.toLowerCase() === name.toLowerCase()
+      )
+    )
+      return Notiflix.Notify.failure(`${name} is already in phonebook`);
     this.setState(prevState => {
-      return flag
-        ? alert(`${data.name} is alredy in contacts`)
-        : { contacts: [data, ...prevState.contacts] };
+      return { contacts: [...prevState.contacts, { id, name, number }] };
     });
   };
-  changeFilter = event => {
-    this.setState({ filter: event.currentTarget.value });
+  getContacts = () => {
+    const { filter, contacts } = this.state;
+    const filterNormalize = filter.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filterNormalize)
+    );
   };
+
   deleteContacts = id => {
     this.setState(prevState => ({
       contacts: prevState.contacts.filter(contact => contact.id !== id),
     }));
   };
+  changeFilter = element => {
+    this.setState({ filter: element.currentTarget.value });
+  };
   componentDidMount() {
-    const contacts = localStorage.getItem(`contacts`);
+    const contacts = localStorage.getItem(`Contacts`);
     const contactsParse = JSON.parse(contacts);
     if (contactsParse) {
       this.setState({ contacts: contactsParse });
@@ -42,28 +54,26 @@ export class App extends React.Component {
 
   componentDidUpdate(prevState) {
     const { contacts } = this.state;
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem(`contacts`, JSON.stringify(this.state.contacts));
+    if (contacts !== prevState.contacts) {
+      localStorage.setItem(`Contacts`, JSON.stringify(this.state.contacts));
     }
   }
 
   render() {
-    const { contacts, filter } = this.state;
-    const normalizedFilter = this.state.filter.toLowerCase();
-    const visibleContacts = this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
+    const { filter } = this.state;
     return (
       <div className={styles.wrap}>
-        <h2>Phonebook</h2>
-        <Form onSubmit={this.submitHandler} contacts={contacts} />
+        <h1>Phonebook</h1>
+        <Form onSubmitData={this.addContacts} />
         <h2>Contacts</h2>
-        <Filter value={this.state.filter} onChange={this.changeFilter} />
+        <Filter value={filter} onChange={this.changeFilter} />
         <ContactList
-          contacts={visibleContacts}
-          deleteContacts={this.deleteContacts}
+          contacts={this.getContacts()}
+          handleRemove={this.deleteContacts}
         />
       </div>
     );
   }
 }
+
+export default App;
